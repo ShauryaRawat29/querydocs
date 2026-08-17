@@ -1,0 +1,19 @@
+querydocs/
+  backend/          # FastAPI app + Dockerfile + render.yaml
+  frontend/         # Next.js 15 app (App Router)
+  node_modules/
+  .next/
+  .venv/
+
+# Python
+backend/.venv/
+backend/__pycache__/
+backend/app/__pycache__/
+backend/app/tests/__pycache__/
+*.pyc
+.venv/
+
+# Next.js
+frontend/node_modules/
+frontend/.next/
+frontend/out/
