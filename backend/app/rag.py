@@ -12,12 +12,13 @@ from .vectorstore import DocChunk, VectorStore, chunk_text
 
 
 def extract_text(file: UploadFile) -> str:
+    raw = file.file.read()
     if file.filename and file.filename.endswith(".pdf"):
         from pypdf import PdfReader
 
-        reader = PdfReader(io.BytesIO(file.read()))
+        reader = PdfReader(io.BytesIO(raw))
         return "\n".join(page.extract_text() or "" for page in reader.pages)
-    return file.read().decode("utf-8", errors="replace")
+    return raw.decode("utf-8", errors="replace")
 
 
 class RAG:
