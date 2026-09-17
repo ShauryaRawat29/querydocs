@@ -4,11 +4,7 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from .config import settings
-from .embeddings import Embedder
-from .llm import LLM
-from .rag import RAG
-from .vectorstore import VectorStore
+from .core import RAG, VectorStore
 
 
 class QueryRequest(BaseModel):
@@ -40,8 +36,7 @@ def get_rag() -> RAG:
     """
     cached = getattr(app.state, "rag", None)
     if cached is None:
-        Embedder._get()
-        store = VectorStore(Embedder._get())
+        store = VectorStore()
         store.load()
         cached = RAG(store)
         app.state.rag = cached
@@ -50,7 +45,8 @@ def get_rag() -> RAG:
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"ok": True, "provider": LLM.provider()}
+    from .core import llm_provider
+    return {"ok": True, "provider": llm_provider()}
 
 
 @app.post("/api/ingest")
@@ -64,7 +60,6 @@ def ingest(title: str = Form(...), file: UploadFile = File(...)):  # noqa: B008
         "doc_id": result.doc_id,
         "chunks": result.chunks,
         "title": result.title,
-        "index_path": settings.index_path,
     }
 
 
